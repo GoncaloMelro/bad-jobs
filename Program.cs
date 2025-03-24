@@ -17,7 +17,7 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 app.UseConfiguredHangfire();
 
-app.MapGet("/foo", (int limit) =>
+app.MapGet("/foo", () =>
 {
     CustomMetrics.AddJobCount("DemoJob");
     BackgroundJob.Enqueue<DemoJobs>(s =>
