@@ -1,9 +1,12 @@
 using badjobs.Jobs;
 using Hangfire;
+using OpenTelemetry.Metrics;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddConfiguredHangfire(builder.Configuration);
+builder.Services.AddOpenTelemetry()
+    .WithMetrics(m => m.AddPrometheusExporter());
 
 var app = builder.Build();
 
@@ -17,5 +20,8 @@ app.MapGet("/foo", (int limit) =>
 
     return Results.NoContent();
 });
+
+
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.Run();
