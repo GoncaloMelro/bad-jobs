@@ -1,4 +1,8 @@
-﻿namespace badjobs.Jobs;
+﻿using badjobs.Metrics;
+using Hangfire;
+using Hangfire.Server;
+
+namespace badjobs.Jobs;
 
 public class DemoJobs
 {
@@ -8,14 +12,19 @@ public class DemoJobs
         _logger = logger;
     }
 
-    public async Task Run(CancellationToken c = default)
+
+    [AutomaticRetry(Attempts = 0)]
+    public async Task Run(PerformingContext context, CancellationToken c = default)
     {
-        _logger.LogWarning($"Run job started at {DateTime.Now}");
+        try{
+            await Task.Delay(2000);
+            throw new Exception("Simul job fail");
+        }catch(Exception ex){
 
-        await Task.Delay(5000);
-
-        _logger.LogWarning($"Run job ended at {DateTime.Now}");
-
+            CustomMetrics.AddJobFail("DemoJob");
+            _logger.LogError($"Error on DemoJob: {ex.Message}");
+            throw;
+        }
     }
 
 }

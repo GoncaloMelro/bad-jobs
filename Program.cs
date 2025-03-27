@@ -21,9 +21,9 @@ app.MapGet("/foo", () =>
 {
     CustomMetrics.AddJobCount("DemoJob");
     BackgroundJob.Enqueue<DemoJobs>(s =>
-        s.Run(CancellationToken.None));
+        s.Run(null!, CancellationToken.None));
 
-    return Results.NoContent();
+    return Results.Ok("200");
 });
 
 app.UseOpenTelemetryPrometheusScrapingEndpoint();
